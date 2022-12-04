@@ -45,7 +45,7 @@ public record CustomerService(
                 .text(format("Hi %s, congratulations, you are register", customer.getFirstName()))
                 .email(customer.getEmail())
                 .build();
-        rabbitMQMessageProducer.publish(notificationRequest, "internal.queue", "internal.notification.routing-keys");
+        rabbitMQMessageProducer.publish(notificationRequest, "internal.queue", "internal.notification.routing-key");
 
     }
 

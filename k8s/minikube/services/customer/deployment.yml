@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer
+  labels:
+    app: customer
+spec:
+  replicas: 1 # кол-во копий сервиса между которыми будет распределять нагрузку kubernetes service (load balancer)
+  template:
+    metadata:
+      name: customer
+      labels:
+        app: customer
+    spec:
+      containers: # docker контейнер
+        - name: customer
+          image: modiconme/customer:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kube
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: customer
