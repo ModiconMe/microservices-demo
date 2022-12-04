@@ -1,5 +1,7 @@
 package edu.popov.notification;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -7,52 +9,69 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.KafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
+import org.springframework.kafka.support.converter.StringJsonMessageConverter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class NotificationConfig {
 
-    // exchange name
-    @Value("${rabbitmq.exchanges.internal}")
-    private String internalExchange;
+    @Value("${spring.kafka.server}")
+    private String kafkaServer;
 
-    // queue name
-    @Value("${rabbitmq.queue.notification}")
-    private String notificationQueue;
+    @Value("${spring.kafka.groupId}")
+    private String kafkaGroupId;
 
-    // binding name
-    @Value("${rabbitmq.routing-keys.internal-notification}")
-    private String internalNotificationRoutingKey;
-
-    // exchange bean
     @Bean
-    public TopicExchange internalTopicExchange() {
-        return new TopicExchange(internalExchange);
+    public KafkaListenerContainerFactory<?> batchFactory() {
+        ConcurrentKafkaListenerContainerFactory<Long, Object> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        factory.setBatchListener(true);
+        factory.setMessageConverter(new BatchMessagingMessageConverter(converter()));
+        return factory;
     }
 
-    // queue bean
     @Bean
-    public Queue notificationQueue() {
-        return new Queue(notificationQueue);
+    public KafkaListenerContainerFactory<?> singleFactory() {
+        ConcurrentKafkaListenerContainerFactory<Long, Object> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        factory.setBatchListener(false);
+        factory.setMessageConverter(new StringJsonMessageConverter());
+        return factory;
     }
 
-    // binding bean
     @Bean
-    public Binding internalNotificationBinding() {
-        return BindingBuilder.bind(notificationQueue())
-                .to(internalTopicExchange())
-                .with(internalNotificationRoutingKey);
+    public ConsumerFactory<Long, Object> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
-    public String getInternalExchange() {
-        return internalExchange;
+    @Bean
+    public KafkaListenerContainerFactory<?> kafkaListenerContainerFactory() {
+        return new ConcurrentKafkaListenerContainerFactory<>();
     }
 
-    public String getNotificationQueue() {
-        return notificationQueue;
+    @Bean
+    public Map<String, Object> consumerConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, String.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaGroupId);
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
+        return props;
     }
 
-    public String getInternalNotificationRoutingKey() {
-        return internalNotificationRoutingKey;
+    @Bean
+    public StringJsonMessageConverter converter() {
+        return new StringJsonMessageConverter();
     }
 
 }

@@ -21,6 +21,11 @@ spring:
   rabbitmq:
     addresses: localhost:5672
 
+  kafka:
+    server: localhost:9092
+    producer:
+      id: "modicon"
+
 eureka:
   client:
     service-url:

@@ -5,6 +5,7 @@ import edu.popov.clients.fraud.FraudCheckResponse;
 import edu.popov.clients.fraud.FraudClient;
 import edu.popov.clients.notification.NotificationClient;
 import edu.popov.clients.notification.NotificationRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import static java.lang.String.format;
@@ -12,10 +13,9 @@ import static java.lang.String.format;
 @Service
 public record CustomerService(
         CustomerRepository customerRepository,
-//        RestTemplate restTemplate,
         FraudClient fraudClient,
         NotificationClient notificationClient,
-        RabbitMQMessageProducer rabbitMQMessageProducer
+        KafkaTemplate<String, Object> kafkaTemplate
 ) {
 
     public void registerCustomer(CustomerRegistrationRequest request) {
@@ -44,7 +44,7 @@ public record CustomerService(
                 .text(format("Hi %s, congratulations, you are register", customer.getFirstName()))
                 .email(customer.getEmail())
                 .build();
-        rabbitMQMessageProducer.publish(notificationRequest, "internal.queue", "internal.notification.routing-key");
+        kafkaTemplate.send("modicon", notificationRequest);
 
     }
 

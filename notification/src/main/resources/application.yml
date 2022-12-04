@@ -21,6 +21,10 @@ spring:
   rabbitmq:
     addresses: localhost:5672
 
+  kafka:
+    server: localhost:9092
+    groupId: "groupId"
+
 rabbitmq:
   exchanges:
     internal: internal.queue
