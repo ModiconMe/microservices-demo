@@ -26,7 +26,6 @@ public record CustomerService(
                 .build();
         // todo: check if email is valid
         // todo: check if email not taken
-        // todo: check if fraudster
         customerRepository.saveAndFlush(customer);
 //        FraudCheckResponse fraudCheckResponse = restTemplate.getForObject(
 //                "http://FRAUD/api/v1/fraud-check/{customerId}",
