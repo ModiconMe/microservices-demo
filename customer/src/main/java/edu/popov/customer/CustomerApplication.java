@@ -9,8 +9,7 @@ import org.springframework.context.annotation.PropertySources;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "edu.popov.customer",
-                "edu.popov.amqp"
+                "edu.popov.customer"
         }
 )
 @EnableEurekaClient

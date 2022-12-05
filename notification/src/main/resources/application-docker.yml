@@ -18,8 +18,11 @@ spring:
     show-sql: true
   zipkin:
     base-url: http://zipkin:9411
-  rabbitmq:
-    addresses: rabbitmq:5672
+#  rabbitmq:
+#    addresses: rabbitmq:5672
+  kafka:
+    server: localhost:9092
+    groupId: "groupId"
 
 eureka:
   client:
@@ -29,10 +32,10 @@ eureka:
     register-with-eureka: true
     enabled: false
 
-rabbitmq:
-  exchanges:
-    internal: internal.queue
-  queue:
-    notification: notification.queue
-  routing-keys:
-    internal-notification: jav
+#rabbitmq:
+#  exchanges:
+#    internal: internal.queue
+#  queue:
+#    notification: notification.queue
+#  routing-keys:
+#    internal-notification: jav

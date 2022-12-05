@@ -8,8 +8,7 @@ import org.springframework.context.annotation.PropertySources;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "edu.popov.notification",
-                "edu.popov.amqp"
+                "edu.popov.notification"
         }
 )
 @EnableEurekaClient

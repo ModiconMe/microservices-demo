@@ -1,6 +1,5 @@
 package edu.popov.customer;
 
-import edu.popov.amqp.RabbitMQMessageProducer;
 import edu.popov.clients.fraud.FraudCheckResponse;
 import edu.popov.clients.fraud.FraudClient;
 import edu.popov.clients.notification.NotificationClient;

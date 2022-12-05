@@ -13,6 +13,7 @@
         <module name="fraud" />
         <module name="amqp" />
         <module name="customer" />
+        <module name="register" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
